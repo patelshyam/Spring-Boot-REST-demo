@@ -1,0 +1,41 @@
+package com.springboot.blog.entity;
+
+import lombok.Data;
+
+import javax.persistence.*;
+import java.util.Set;
+
+@Data
+@Entity
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"username"}),
+        @UniqueConstraint(columnNames = {"email"})
+})
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    private String name;
+    private String username;
+    private String email;
+    private String password;
+
+
+        /* FetchType.EAGER = Fetch type eager mens everyTime fetch the roles when we load the users. Not on demand.
+       FetchType.LAZY = Fetch type lazy loading not every-time we fetch. But on demand.
+
+       When ever there are too many associations then we use LAZY instead of EAGER(e.g. University - Student relationship, Post - Comment).
+       When ever there are not too many associations, but we frequently use the associations then we use EAGER.
+       Default is LAZY.
+
+
+    */
+
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set<Role> roles;
+}
